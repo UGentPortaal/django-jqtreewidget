@@ -1,0 +1,45 @@
+<div id="tree_{{ name }}"></div>
+<script type="text/javascript">
+    $(function() {
+        // load the data into the tree object
+        var tree = $("#tree_{{ name }}");
+        tree.tree({ data: {{ data }}, });
+
+        // select the initial values (if any)
+        $("input[name={{ name }}]").remove();
+        var selected = {{ value }};
+        for (i in selected) {
+            var node = tree.tree("getNodeById", selected[i]);
+            if (node) {
+                tree.tree('addToSelection', node);
+                tree.after('<input type="hidden" name="{{ name }}" value="' + selected[i] + '" />');
+
+                // open the tree to the selected value
+                var parent_node = node.parent;
+                while (parent_node) {
+                    tree.tree("openNode", parent_node, false);
+                    parent_node = parent_node.parent;
+                }
+            }
+        }
+
+        // bind the event tree.click to the tree
+        tree.bind(
+            "tree.click",
+            function(event) {
+                // prevent single select behavior
+                event.preventDefault();
+
+                // add or remove the value
+                var node = event.node;
+                if (tree.tree('isNodeSelected', node)) {
+                    tree.tree('removeFromSelection', node);
+                    $("input[name={{ name }}][value=" + node.id + "]").remove();
+                } else {
+                    tree.tree('addToSelection', node);
+                    tree.after('<input type="hidden" name="{{ name }}" value="' + node.id + '" />');
+                }
+            }
+        );
+    });
+</script>

@@ -1,0 +1,36 @@
+<div id="tree_{{ name }}"></div>
+<input type="hidden" id="id_{{ name }}" name="{{ name }}" value="{{ value }}" />
+<script type="text/javascript">
+    $(function() {
+        // load the data into the tree object
+        var tree = $("#tree_{{ name }}");
+        tree.tree({ data: {{ data }}, });
+
+        // select the initial value (if any)
+        var selected = "{{ value }}";
+        if (selected) {
+            var node = tree.tree("getNodeById", selected);
+            if (node) {
+                tree.tree("selectNode", node);
+            }
+        }
+
+        // bind the event tree.select to the tree
+        tree.bind(
+            "tree.select",
+            function(event) {
+                // change or remove the value
+                var input = $("#id_{{ name }}");
+                if (event.node) {
+                    var node = event.node;
+                    input.val(node.id);
+                }
+                else {
+                    input.val("");
+                }
+            }
+        );
+
+
+    });
+</script>
